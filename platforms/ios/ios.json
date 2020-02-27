@@ -34,6 +34,13 @@
               "xml": "<string> </string>",
               "count": 1
             }
+          ],
+          "UIBackgroundModes": [
+            {
+              "xml": "<array><string>bluetooth-central</string></array>",
+              "count": 1,
+              "id": "config.xml"
+            }
           ]
         }
       }

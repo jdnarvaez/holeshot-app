@@ -19,9 +19,16 @@
         <param name="ios-package" value="CDVGestureHandler" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="BLE">
+        <param name="ios-package" onload="true" value="BLECentralPlugin" />
+    </feature>
+    <feature name="SplashScreen">
+        <param name="ios-package" value="CDVSplashScreen" />
+        <param name="onload" value="true" />
+    </feature>
     <name>Holeshot</name>
     <description>
-        BMX training
+        BMX Training
     </description>
     <author email="juan.d.narvaez@gmail.com" href="https://github.com/jdnarvaez">
         Juan Narvaez
@@ -36,8 +43,11 @@
     <allow-intent href="geo:*" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
-    <preference name="AutoHideSplashScreen" value="false" />
-    <preference name="SplashScreenDelay" value="0" />
+    <config-file parent="UIBackgroundModes" target="*-Info.plist">
+        <array>
+            <string>bluetooth-central</string>
+        </array>
+    </config-file>
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="true" />
@@ -51,11 +61,6 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
-    <feature name="BLE">
-        <param name="ios-package" onload="true" value="BLECentralPlugin" />
-    </feature>
-    <feature name="SplashScreen">
-        <param name="ios-package" value="CDVSplashScreen" />
-        <param name="onload" value="true" />
-    </feature>
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreenDelay" value="0" />
 </widget>

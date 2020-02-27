@@ -49,8 +49,12 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string></string>
+	<string>Bluetooth connectivity is required to record stats from sensors</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string></string>
+	<string>Bluetooth connectivity is required in the background to record stats</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+	</array>
 </dict>
 </plist>
