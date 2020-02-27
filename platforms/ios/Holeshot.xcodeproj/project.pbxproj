@@ -20,6 +20,8 @@
 		D8B0AB1670484C36A6C40E59 /* BLECentralPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 08B1CF4C21C142B4B4A00054 /* BLECentralPlugin.m */; };
 		1F43A4990B894A6DA5CD6366 /* CDVSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 627BD14646534CD3A8BECECC /* CDVSplashScreen.m */; };
 		FBF82C0D0EF84BB4B1233825 /* CDVViewController+SplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 384629A0CF5E40D3BFE2AD8D /* CDVViewController+SplashScreen.m */; };
+		6F450CEA03B540D491A85F72 /* CDVSharedPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F56A444F61B4F9B80FC80B8 /* CDVSharedPreferences.m */; };
+		09ECDE3BF68040C683496F96 /* NSUserDefaults+CDVSharedPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FF595A309374F4D99B8468D /* NSUserDefaults+CDVSharedPreferences.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +80,10 @@
 		384629A0CF5E40D3BFE2AD8D /* CDVViewController+SplashScreen.m */ = {isa = PBXFileReference; name = "CDVViewController+SplashScreen.m"; path = "cordova-plugin-splashscreen/CDVViewController+SplashScreen.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		F85DD587057C4E51A8898B8F /* CDVSplashScreen.h */ = {isa = PBXFileReference; name = "CDVSplashScreen.h"; path = "cordova-plugin-splashscreen/CDVSplashScreen.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		206628E61816481A80386B7D /* CDVViewController+SplashScreen.h */ = {isa = PBXFileReference; name = "CDVViewController+SplashScreen.h"; path = "cordova-plugin-splashscreen/CDVViewController+SplashScreen.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		3F56A444F61B4F9B80FC80B8 /* CDVSharedPreferences.m */ = {isa = PBXFileReference; name = "CDVSharedPreferences.m"; path = "cordova-plugin-awesome-shared-preferences/CDVSharedPreferences.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		9FF595A309374F4D99B8468D /* NSUserDefaults+CDVSharedPreferences.m */ = {isa = PBXFileReference; name = "NSUserDefaults+CDVSharedPreferences.m"; path = "cordova-plugin-awesome-shared-preferences/NSUserDefaults+CDVSharedPreferences.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		971DAE8A40D64CF99DE2E6E8 /* CDVSharedPreferences.h */ = {isa = PBXFileReference; name = "CDVSharedPreferences.h"; path = "cordova-plugin-awesome-shared-preferences/CDVSharedPreferences.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		F10ED306B9D04B67B4CDC68E /* NSUserDefaults+CDVSharedPreferences.h */ = {isa = PBXFileReference; name = "NSUserDefaults+CDVSharedPreferences.h"; path = "cordova-plugin-awesome-shared-preferences/NSUserDefaults+CDVSharedPreferences.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +200,10 @@
 				384629A0CF5E40D3BFE2AD8D /* CDVViewController+SplashScreen.m */,
 				F85DD587057C4E51A8898B8F /* CDVSplashScreen.h */,
 				206628E61816481A80386B7D /* CDVViewController+SplashScreen.h */,
+				3F56A444F61B4F9B80FC80B8 /* CDVSharedPreferences.m */,
+				9FF595A309374F4D99B8468D /* NSUserDefaults+CDVSharedPreferences.m */,
+				971DAE8A40D64CF99DE2E6E8 /* CDVSharedPreferences.h */,
+				F10ED306B9D04B67B4CDC68E /* NSUserDefaults+CDVSharedPreferences.h */,
 			);
 			name = Plugins;
 			path = Holeshot/Plugins;
@@ -328,6 +338,8 @@
 				332D0D8B7EE044249F612779 /* BLECommandContext.m in Sources */,
 				1F43A4990B894A6DA5CD6366 /* CDVSplashScreen.m in Sources */,
 				FBF82C0D0EF84BB4B1233825 /* CDVViewController+SplashScreen.m in Sources */,
+				6F450CEA03B540D491A85F72 /* CDVSharedPreferences.m in Sources */,
+				09ECDE3BF68040C683496F96 /* NSUserDefaults+CDVSharedPreferences.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,92 @@
+{
+  "_from": "cordova-plugin-awesome-shared-preferences",
+  "_id": "cordova-plugin-awesome-shared-preferences@0.1.0",
+  "_inBundle": false,
+  "_integrity": "sha1-ZkrI7gGGyK4V5ubwOkeRmJ8uo8k=",
+  "_location": "/cordova-plugin-awesome-shared-preferences",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-awesome-shared-preferences",
+    "name": "cordova-plugin-awesome-shared-preferences",
+    "escapedName": "cordova-plugin-awesome-shared-preferences",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-awesome-shared-preferences/-/cordova-plugin-awesome-shared-preferences-0.1.0.tgz",
+  "_shasum": "664ac8ee0186c8ae15e6e6f03a4791989f2ea3c9",
+  "_spec": "cordova-plugin-awesome-shared-preferences",
+  "_where": "/Users/jn015941/Workspaces/holeshot-app",
+  "author": {
+    "name": "Adriano Di Giovanni",
+    "email": "me@adrianodigiovanni.com",
+    "url": "http://adrianodigiovanni.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-shared-preferences",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Shared preferences for Cordova. Save and retrieve persistent key-value pairs of any Javascript data type.",
+  "devDependencies": {
+    "eslint": "^4.15.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-prettier": "^2.5.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "husky": "^0.14.3",
+    "jsdoc-to-markdown": "^4.0.1",
+    "lint-staged": "^6.1.0",
+    "prettier": "^1.10.2"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "homepage": "https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "shared",
+    "preferences"
+  ],
+  "license": "MIT",
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "main": "index.js",
+  "name": "cordova-plugin-awesome-shared-preferences",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adriano-di-giovanni/cordova-plugin-shared-preferences.git"
+  },
+  "scripts": {
+    "docs": "jsdoc2md --template README.hbs www/index.js > README.md",
+    "precommit": "lint-staged && npm run docs && git add README.md"
+  },
+  "version": "0.1.0"
+}

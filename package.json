@@ -28,6 +28,7 @@
     "animate.css-react": "^1.0.0",
     "cordova": "9.0.0",
     "cordova-ios": "^5.1.1",
+    "cordova-plugin-awesome-shared-preferences": "^0.1.0",
     "cordova-plugin-ble-central": "^1.2.4",
     "cordova-plugin-splashscreen": "^5.0.3",
     "luxon": "^1.21.3",
@@ -88,7 +89,8 @@
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       },
-      "cordova-plugin-splashscreen": {}
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-awesome-shared-preferences": {}
     },
     "platforms": [
       "ios"

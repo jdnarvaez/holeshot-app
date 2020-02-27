@@ -63,4 +63,7 @@
     <preference name="PaginationMode" value="unpaginated" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="SplashScreenDelay" value="0" />
+    <feature name="SharedPreferences">
+        <param name="ios-package" value="CDVSharedPreferences" />
+    </feature>
 </widget>

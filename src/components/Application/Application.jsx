@@ -41,7 +41,8 @@ class Application extends React.Component {
       crank : undefined,
       wheel : undefined,
       speed : 0,
-      cadence : 0
+      cadence : 0,
+      preferences : window.plugins.SharedPreferences.getInstance()
     };
   }
 
@@ -67,7 +68,7 @@ class Application extends React.Component {
 
   onCrankDeviceSelected = (device) => {
     const { connectDevice, disconnectDevice } = this;
-    const { crankDevice } = this.state;
+    const { crankDevice, preferences } = this.state;
 
     if (device && crankDevice && device.id === crankDevice.id) {
       return this.setState({ crankDevice : undefined }, () => {
@@ -77,14 +78,24 @@ class Application extends React.Component {
 
     this.setState({ crankDevice : device }, () => {
       if (device) {
-        connectDevice(device)
+        connectDevice(device);
+
+        if (!device) {
+          return preferences.del('crankDevice', () => {}, (error) => {
+            console.error('Unable to delete stored crank device');
+          });
+        }
+
+        preferences.put('crankDevice', device, () => {}, (error) => {
+          console.error('Unable to store crank device');
+        });
       }
     });
   }
 
   onWheelDeviceSelected = (device) => {
     const { connectDevice, disconnectDevice } = this;
-    const { wheelDevice } = this.state;
+    const { wheelDevice, preferences } = this.state;
 
     if (device && wheelDevice && device.id === wheelDevice.id) {
       return this.setState({ wheelDevice : undefined }, () => {
@@ -94,12 +105,36 @@ class Application extends React.Component {
 
     this.setState({ wheelDevice : device }, () => {
       if (device) {
-        connectDevice(device)
+        connectDevice(device);
+
+        if (!device) {
+          return preferences.del('wheelDevice', () => {}, (error) => {
+            console.error('Unable to delete stored wheel device');
+          });
+        }
+
+        preferences.put('wheelDevice', device, () => {}, (error) => {
+          console.error('Unable to store wheel device');
+        });
       }
     });
   }
 
+  getPreference = (key) => {
+    const { preferences } = this.state;
+
+    return new Promise((resolve, reject) => {
+      preferences.get(key, (value) => {
+        resolve(value);
+      }, (error) => {
+        resolve(undefined);
+        // called when no preference is stored
+      })
+    })
+  }
+
   componentDidMount() {
+    const { getPreference, connectDevice } = this;
     this._mounted = true;
 
     try {
@@ -107,6 +142,30 @@ class Application extends React.Component {
     } catch (error) {  }
 
     window.addEventListener('orientationchange', this.onOrientationChange, false);
+
+    Promise.all([getPreference('crankDevice'), getPreference('wheelDevice')]).then(results => {
+      const crankDevice = results[0];
+      const wheelDevice = results[1];
+      const deviceIds = [crankDevice, wheelDevice].filter(d => !!d).map(d => d.id);
+
+      ble.scan([CYCLING_SPEED_AND_CADENCE], 30, (d) => {
+        if (deviceIds.indexOf(d.id) > -1) {
+          const nextState = {};
+
+          if (crankDevice && crankDevice.id === d.id) {
+            nextState.crankDevice = d;
+          } else if (wheelDevice && wheelDevice.id === d.id) {
+            nextState.wheelDevice = d;
+          }
+
+          this.setState(nextState, () => {
+            connectDevice(d);
+          });
+        }
+      }, (error) => {
+        console.error(error);
+      });
+    }).catch(err => console.error(err));
   }
 
   componentWillUnmount() {

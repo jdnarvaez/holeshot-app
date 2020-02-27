@@ -60,35 +60,37 @@ class SensorSelector extends React.Component {
             const batteryLevel = (selected && !connected) ? 0 : sensor.batteryLevel;
 
             return (
-              <Animate
-                enter="bounceIn"
-                leave="bounceOut"
-                appear="fadeInRight"
-                change="flipInX"
-                durationAppear={1000}
-                durationEnter={1000}
-                durationLeave={1000}
-                animateChangeIf={false}
-                durationChange={1000}
-                className="sensor ripple"
-                key={sensor.id} onClick={() => onSensorSelected(sensor) }
-                component="div">
-                <div className={`icon`} key="icon">
-                  <div>
-                    {connected && <FontAwesomeIcon icon={faLink} className={`link ${connected ? 'connected' : ''}`}/>}
-                    {!connected && selected && <FontAwesomeIcon icon={faUnlink} className={`unlink`}/>}
+              <div key={sensor.id}>
+                <Animate
+                  enter="bounceIn"
+                  leave="bounceOut"
+                  appear="fadeInRight"
+                  change="flipInX"
+                  durationAppear={1000}
+                  durationEnter={1000}
+                  durationLeave={1000}
+                  animateChangeIf={false}
+                  durationChange={1000}
+                  className="sensor ripple"
+                  key={sensor.id} onClick={() => onSensorSelected(sensor) }
+                  component="div">
+                  <div className={`icon`} key="icon">
+                    <div>
+                      {connected && <FontAwesomeIcon icon={faLink} className={`link ${connected ? 'connected' : ''}`}/>}
+                      {!connected && selected && <FontAwesomeIcon icon={faUnlink} className={`unlink`}/>}
+                    </div>
                   </div>
-                </div>
-                <div className="name" key="name">
-                {sensor.name}
-                </div>
-                <div className="signal" key="signal">
-                  <SignalMeter rssi={rssi} />
-                </div>
-                {batteryLevel !== undefined && <div className="battery" key="battery">
-                  <BatteryMeter level={batteryLevel} />
-                </div>}
-              </Animate>
+                  <div className="name" key="name">
+                  {sensor.name}
+                  </div>
+                  <div className="signal" key="signal">
+                    <SignalMeter rssi={rssi} />
+                  </div>
+                  {batteryLevel !== undefined && <div className="battery" key="battery">
+                    <BatteryMeter level={batteryLevel} />
+                  </div>}
+                </Animate>
+              </div>
             )})}
         </Animate>
       </div>

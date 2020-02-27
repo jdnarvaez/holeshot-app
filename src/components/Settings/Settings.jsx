@@ -36,7 +36,7 @@ class Settings extends React.Component {
   onDisconnectDevice = (device) => {
     const { devices } = this.state;
     const updatedDevices = devices.filter(d => d.id !== device.id);
-    
+
     this.setState({ devices : updatedDevices });
   }
 
@@ -127,36 +127,48 @@ class Settings extends React.Component {
         connectedDevices.forEach(device => scannedDevices.push(device));
         connectedDevices.forEach(device => this.readBatteryLevel(device, false));
 
-        ble.scan([CYCLING_SPEED_AND_CADENCE], 5, (device) => {
-          scannedDevices.push(device);
+        const component = this;
 
-          if (this.knownDevice(device.id) || scannedDevices.indexOf(device.id) > -1) {
-            return;
-          }
+        function completeScan() {
+          ble.scan([CYCLING_SPEED_AND_CADENCE], 5, (device) => {
+            scannedDevices.push(device);
 
-          ble.connect(device.id, () => {
-            this.readBatteryLevel(device, true);
-          }, error => {
+            if (component.knownDevice(device.id) || scannedDevices.indexOf(device.id) > -1) {
+              return;
+            }
+
+            ble.connect(device.id, () => {
+              component.readBatteryLevel(device, true);
+            }, error => {
+              console.error(error);
+            });
+          }, (error) => {
             console.error(error);
           });
-        }, (error) => {
-          console.error(error);
-        });
 
-        this.canceler = setTimeout(() => {
-          const { devices  } = this.state;
-          const scannedDeviceIds = scannedDevices.map(device => device.id);
-          const updatedDevices = devices.filter(device => scannedDeviceIds.indexOf(device.id) > -1);
+          component.canceler = setTimeout(() => {
+            const { devices  } = component.state;
+            const scannedDeviceIds = scannedDevices.map(device => device.id);
+            const updatedDevices = devices.filter(device => scannedDeviceIds.indexOf(device.id) > -1);
 
-          if (!this._mounted) {
-            return;
-          }
+            if (!component._mounted) {
+              return;
+            }
 
-          this.setState({ scanning : false, devices : updatedDevices }, () => {
-            ble.stopScan();
-            this.scanner = setTimeout(this.performScan, 5 * 1000);
+            component.setState({ scanning : false, devices : updatedDevices }, () => {
+              ble.stopScan();
+              component.scanner = setTimeout(component.performScan, 5 * 1000);
+            });
+          }, 5 * 1000);
+        }
+
+        if (connectedDevices.length > 0) {
+          this.setState({ devices : connectedDevices }, () => {
+            completeScan();
           });
-        }, 5 * 1000);
+        } else {
+          completeScan();
+        }
       }, (error) => {
         console.error(error);
         this.setState({ scanning : false });
@@ -193,7 +205,22 @@ class Settings extends React.Component {
 
     // probably slow for huge arrays but ¯\_(ツ)_/¯
     const allDevices = [wheelDevice, crankDevice].concat(devices).filter(d => !!d);
-    const uniqueDevices = Array.from(new Set(allDevices.map(a => a.id))).map(id => allDevices.find(a => a.id === id));
+    const deviceMap = {};
+
+    allDevices.forEach(device => {
+      var attributes = deviceMap[device.id];
+
+      if (!attributes) {
+        attributes = {};
+        deviceMap[device.id] = attributes;
+      }
+
+      for (var property in device) {
+        attributes[property] = device[property];
+      }
+    })
+
+    const uniqueDevices = Object.values(deviceMap);
 
     return (
       <div className="settings panel" key="settings">

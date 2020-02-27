@@ -55686,7 +55686,9 @@ function (_React$Component) {
           connectDevice = _assertThisInitialize.connectDevice,
           disconnectDevice = _assertThisInitialize.disconnectDevice;
 
-      var crankDevice = _this.state.crankDevice;
+      var _this$state = _this.state,
+          crankDevice = _this$state.crankDevice,
+          preferences = _this$state.preferences;
 
       if (device && crankDevice && device.id === crankDevice.id) {
         return _this.setState({
@@ -55701,6 +55703,16 @@ function (_React$Component) {
       }, function () {
         if (device) {
           connectDevice(device);
+
+          if (!device) {
+            return preferences.del('crankDevice', function () {}, function (error) {
+              console.error('Unable to delete stored crank device');
+            });
+          }
+
+          preferences.put('crankDevice', device, function () {}, function (error) {
+            console.error('Unable to store crank device');
+          });
         }
       });
     });
@@ -55710,7 +55722,9 @@ function (_React$Component) {
           connectDevice = _assertThisInitialize2.connectDevice,
           disconnectDevice = _assertThisInitialize2.disconnectDevice;
 
-      var wheelDevice = _this.state.wheelDevice;
+      var _this$state2 = _this.state,
+          wheelDevice = _this$state2.wheelDevice,
+          preferences = _this$state2.preferences;
 
       if (device && wheelDevice && device.id === wheelDevice.id) {
         return _this.setState({
@@ -55725,7 +55739,28 @@ function (_React$Component) {
       }, function () {
         if (device) {
           connectDevice(device);
+
+          if (!device) {
+            return preferences.del('wheelDevice', function () {}, function (error) {
+              console.error('Unable to delete stored wheel device');
+            });
+          }
+
+          preferences.put('wheelDevice', device, function () {}, function (error) {
+            console.error('Unable to store wheel device');
+          });
         }
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "getPreference", function (key) {
+      var preferences = _this.state.preferences;
+      return new Promise(function (resolve, reject) {
+        preferences.get(key, function (value) {
+          resolve(value);
+        }, function (error) {
+          resolve(undefined); // called when no preference is stored
+        });
       });
     });
 
@@ -55749,9 +55784,9 @@ function (_React$Component) {
       }
 
       ble.connect(device.id, function () {
-        var _this$state = _this.state,
-            crankDevice = _this$state.crankDevice,
-            wheelDevice = _this$state.wheelDevice;
+        var _this$state3 = _this.state,
+            crankDevice = _this$state3.crankDevice,
+            wheelDevice = _this$state3.wheelDevice;
 
         if (_this._mounted) {
           if (crankDevice && crankDevice.id === device.id) {
@@ -55802,9 +55837,9 @@ function (_React$Component) {
             };
           }
 
-          var _this$state2 = _this.state,
-              wheel = _this$state2.wheel,
-              crank = _this$state2.crank;
+          var _this$state4 = _this.state,
+              wheel = _this$state4.wheel,
+              crank = _this$state4.crank;
 
           if (wheel && nextState.wheel) {
             var wheelTimeDiff = _this.diffForSample(nextState.wheel.event_time, wheel.event_time, UINT16_MAX) / 1024;
@@ -55832,9 +55867,9 @@ function (_React$Component) {
 
           _this.setState(nextState);
         }, function (error) {
-          var _this$state3 = _this.state,
-              crankDevice = _this$state3.crankDevice,
-              wheelDevice = _this$state3.wheelDevice;
+          var _this$state5 = _this.state,
+              crankDevice = _this$state5.crankDevice,
+              wheelDevice = _this$state5.wheelDevice;
 
           if (_this._mounted) {
             if (crankDevice && crankDevice.id === device.id) {
@@ -55892,7 +55927,8 @@ function (_React$Component) {
       crank: undefined,
       wheel: undefined,
       speed: 0,
-      cadence: 0
+      cadence: 0,
+      preferences: window.plugins.SharedPreferences.getInstance()
     };
     return _this;
   }
@@ -55900,6 +55936,10 @@ function (_React$Component) {
   _createClass(Application, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      var _this2 = this;
+
+      var getPreference = this.getPreference,
+          connectDevice = this.connectDevice;
       this._mounted = true;
 
       try {
@@ -55907,6 +55947,34 @@ function (_React$Component) {
       } catch (error) {}
 
       window.addEventListener('orientationchange', this.onOrientationChange, false);
+      Promise.all([getPreference('crankDevice'), getPreference('wheelDevice')]).then(function (results) {
+        var crankDevice = results[0];
+        var wheelDevice = results[1];
+        var deviceIds = [crankDevice, wheelDevice].filter(function (d) {
+          return !!d;
+        }).map(function (d) {
+          return d.id;
+        });
+        ble.scan([CYCLING_SPEED_AND_CADENCE], 30, function (d) {
+          if (deviceIds.indexOf(d.id) > -1) {
+            var nextState = {};
+
+            if (crankDevice && crankDevice.id === d.id) {
+              nextState.crankDevice = d;
+            } else if (wheelDevice && wheelDevice.id === d.id) {
+              nextState.wheelDevice = d;
+            }
+
+            _this2.setState(nextState, function () {
+              connectDevice(d);
+            });
+          }
+        }, function (error) {
+          console.error(error);
+        });
+      }).catch(function (err) {
+        return console.error(err);
+      });
     }
   }, {
     key: "componentWillUnmount",
@@ -55914,9 +55982,9 @@ function (_React$Component) {
       this._mounted = false;
       window.removeEventListener('orientationchange', this.onOrientationChange);
       var disconnectDevice = this.disconnectDevice;
-      var _this$state4 = this.state,
-          wheelDevice = _this$state4.wheelDevice,
-          crankDevice = _this$state4.crankDevice;
+      var _this$state6 = this.state,
+          wheelDevice = _this$state6.wheelDevice,
+          crankDevice = _this$state6.crankDevice;
       var devices = [wheelDevice, crankDevice];
       devices.filter(function (d) {
         return !!d;
@@ -55932,9 +56000,9 @@ function (_React$Component) {
           onCrankDeviceSelected = this.onCrankDeviceSelected,
           onWheelDeviceSelected = this.onWheelDeviceSelected,
           connectDevice = this.connectDevice;
-      var _this$state5 = this.state,
-          orientation = _this$state5.orientation,
-          activeTab = _this$state5.activeTab;
+      var _this$state7 = this.state,
+          orientation = _this$state7.orientation,
+          activeTab = _this$state7.activeTab;
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "application ".concat(orientation)
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -56994,7 +57062,9 @@ function (_React$Component) {
         var connected = sensor.isConnected;
         var rssi = selected && !connected ? -100 : sensor.rssi;
         var batteryLevel = selected && !connected ? 0 : sensor.batteryLevel;
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(animate_css_react__WEBPACK_IMPORTED_MODULE_1___default.a, {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+          key: sensor.id
+        }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(animate_css_react__WEBPACK_IMPORTED_MODULE_1___default.a, {
           enter: "bounceIn",
           leave: "bounceOut",
           appear: "fadeInRight",
@@ -57032,7 +57102,7 @@ function (_React$Component) {
           key: "battery"
         }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_BatteryMeter__WEBPACK_IMPORTED_MODULE_6__["default"], {
           level: batteryLevel
-        })));
+        }))));
       })));
     }
   }]);
@@ -57283,42 +57353,57 @@ function (_React$Component) {
           connectedDevices.forEach(function (device) {
             return _this.readBatteryLevel(device, false);
           });
-          ble.scan([CYCLING_SPEED_AND_CADENCE], 5, function (device) {
-            scannedDevices.push(device);
 
-            if (_this.knownDevice(device.id) || scannedDevices.indexOf(device.id) > -1) {
-              return;
-            }
+          var component = _assertThisInitialized(_this);
 
-            ble.connect(device.id, function () {
-              _this.readBatteryLevel(device, true);
+          function completeScan() {
+            ble.scan([CYCLING_SPEED_AND_CADENCE], 5, function (device) {
+              scannedDevices.push(device);
+
+              if (component.knownDevice(device.id) || scannedDevices.indexOf(device.id) > -1) {
+                return;
+              }
+
+              ble.connect(device.id, function () {
+                component.readBatteryLevel(device, true);
+              }, function (error) {
+                console.error(error);
+              });
             }, function (error) {
               console.error(error);
             });
-          }, function (error) {
-            console.error(error);
-          });
-          _this.canceler = setTimeout(function () {
-            var devices = _this.state.devices;
-            var scannedDeviceIds = scannedDevices.map(function (device) {
-              return device.id;
-            });
-            var updatedDevices = devices.filter(function (device) {
-              return scannedDeviceIds.indexOf(device.id) > -1;
-            });
+            component.canceler = setTimeout(function () {
+              var devices = component.state.devices;
+              var scannedDeviceIds = scannedDevices.map(function (device) {
+                return device.id;
+              });
+              var updatedDevices = devices.filter(function (device) {
+                return scannedDeviceIds.indexOf(device.id) > -1;
+              });
 
-            if (!_this._mounted) {
-              return;
-            }
+              if (!component._mounted) {
+                return;
+              }
 
+              component.setState({
+                scanning: false,
+                devices: updatedDevices
+              }, function () {
+                ble.stopScan();
+                component.scanner = setTimeout(component.performScan, 5 * 1000);
+              });
+            }, 5 * 1000);
+          }
+
+          if (connectedDevices.length > 0) {
             _this.setState({
-              scanning: false,
-              devices: updatedDevices
+              devices: connectedDevices
             }, function () {
-              ble.stopScan();
-              _this.scanner = setTimeout(_this.performScan, 5 * 1000);
+              completeScan();
             });
-          }, 5 * 1000);
+          } else {
+            completeScan();
+          }
         }, function (error) {
           console.error(error);
 
@@ -57374,13 +57459,20 @@ function (_React$Component) {
       var allDevices = [wheelDevice, crankDevice].concat(devices).filter(function (d) {
         return !!d;
       });
-      var uniqueDevices = Array.from(new Set(allDevices.map(function (a) {
-        return a.id;
-      }))).map(function (id) {
-        return allDevices.find(function (a) {
-          return a.id === id;
-        });
+      var deviceMap = {};
+      allDevices.forEach(function (device) {
+        var attributes = deviceMap[device.id];
+
+        if (!attributes) {
+          attributes = {};
+          deviceMap[device.id] = attributes;
+        }
+
+        for (var property in device) {
+          attributes[property] = device[property];
+        }
       });
+      var uniqueDevices = Object.values(deviceMap);
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "settings panel",
         key: "settings"
