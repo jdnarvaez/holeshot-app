@@ -1,0 +1,62 @@
+@import "../../assets/scss/variables";
+
+.metrics {
+  padding-top: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  // justify-content: space-around;
+
+  .metric {
+    opacity: .7;
+    position: relative;
+    flex-direction: column;
+    min-height: 230px;
+    max-height: 230px;
+    overflow: hidden;
+
+    .current-value {
+      position: absolute;
+      left: 120px;
+      bottom: -15px;
+      font-size: 107px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -9px;
+      color: $main;
+    }
+
+    .units {
+      position: absolute;
+      left: 240px;
+      top: 65px;
+      font-size: 40px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      color: $main;
+    }
+
+    .device {
+      position: absolute;
+      align-items: center;
+      right: 0px;
+      bottom: -15px;
+      display: flex;
+      flex-direction: row;
+      font-size: 10px;
+      letter-spacing: -.5px;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: $stat-info-text;
+
+      .name {
+        padding-top: 5px;
+      }
+    }
+  }
+}

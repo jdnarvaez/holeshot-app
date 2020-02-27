@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap');
+@import "../../assets/scss/variables";
+
+:root {
+  --main: #{$main};
+  --primary-color: #{$primary};
+  --secondary-color: #{$secondary};
+  --background-color: #{$background};
+  --background-secondary-color: #{$background-secondary};
+  --border-color: 62, 67, 84;
+  --border-radius: 10px;
+  --active-color: 101, 219, 146;
+  --danger-color: 224, 76, 76;
+  --foreground-color: 132, 137, 154;
+  --font-family: 'Poppins';
+}
+
+html, body {
+  width : 100%;
+  height: 100%;
+  margin: 0px;
+  // background: rgb(46, 79, 134);
+  background: $background;
+  font-family: 'Poppins', ;
+  color: rgb(200, 200, 200)
+}
+
+#root {
+  width : 100%;
+  height: 100%;
+
+  background:
+    radial-gradient(
+      farthest-side at bottom left,
+      rgba(lighten($background, 10%), .2),
+      transparent
+    ),
+    radial-gradient(
+      farthest-corner at bottom right,
+      rgba(lighten($background, 20%), .6),
+      transparent 40%
+    );
+
+  // background:
+  //   radial-gradient(
+  //     farthest-side at bottom left,
+  //     rgba(255, 0, 255, 0.5),
+  //     transparent
+  //   ),
+  //   radial-gradient(
+  //     farthest-corner at bottom right,
+  //     rgba(255, 50, 50, 0.5),
+  //     transparent 40%
+  //   );
+}
+
+.application {
+  transition: all 250ms linear;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .bg-image {
+    opacity: .2;
+    z-index: 0;
+  }
+}
+
+.main-panel {
+  width: 100%;
+  height: calc(100% - 120px);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  .panel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+  }
+}
+
+.main-panel.portrait {
+  top: 40px;
+  left: 0px;
+}
+
+.main-panel.landscape {
+  left: 80px;
+  top: 0px;
+}
+
+.indicator {
+  position: absolute;
+  bottom: 75px;
+  left: 0px;
+  height: 4px;
+  width: calc(33%);
+  background: $primary;
+  transition: all 250ms linear;
+  z-index: 100;
+}
+
+.indicator.one {
+  left: calc(33%);
+}
+
+.indicator.two {
+  left: calc(66%);
+}
+
+.navigation-panel {
+  position: absolute;
+  display: flex;
+  // background: radial-gradient(ellipse at center, rgba(84,84,100,.5) 0%, rgba(39,39,59,.5) 99%, rgba(39,39,59,.5) 100%);
+  background: darken($background, 5%);
+
+  .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    color: rgb(255, 255, 255);
+  }
+
+  .btn.active {
+    // color: rgb(235, 253, 110);
+    color: $primary;
+  }
+}
+
+.navigation-panel.portrait {
+  bottom: 0px;
+  left: 0px;
+  min-height: 75px;
+  width: 100%;
+  border-top: 4px solid lighten($background, 10%);
+
+  .btn {
+    border-right: 4px solid lighten($background, 10%);
+    width: calc(33%);
+  }
+
+  .btn:last-child {
+    border-right: 0px;
+  }
+
+  // border-top: 4px solid rgb(56, 89, 144);
+  // background: linear-gradient(98deg, rgba(16, 49, 104, .4) 0%, rgba(66, 99, 154, .4) 50%, rgba(6, 39, 94, .4) 100%);
+}
+
+.navigation-panel.landscape {
+  left: 0px;
+  top: 0px;
+  min-width: 75px;
+  height: 100%;
+  border-right: 4px solid lighten($background, 10%);
+
+  .btn {
+    border-bottom: 4px solid lighten($background, 10%);
+    height: calc(33% - 4px);
+  }
+
+  .btn:last-child {
+    border-bottom: 0px;
+  }
+
+  // border-right: 4px solid rgb(56, 89, 144);
+  // background: linear-gradient(178deg, rgba(16, 49, 104, .4) 0%, rgba(66, 99, 154, .4) 50%, rgba(6, 39, 94, .4) 100%);
+}
+
+/* Ripple effect */
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+  overflow: hidden;
+}
+
+.ripple:active {
+  background-color: lighten($background, 5%);
+  background-size: 100%;
+  transition: background 0s;
+}

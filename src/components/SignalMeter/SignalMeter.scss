@@ -1,0 +1,20 @@
+@import "../../assets/scss/variables";
+
+.signal-meter {
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  margin: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-radius: 2px;
+
+  .bar.strong {
+    background: $primary;
+  }
+
+  .bar.weak {
+    background: $background-secondary;
+  }
+}

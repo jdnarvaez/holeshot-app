@@ -1,0 +1,29 @@
+@import "../../assets/scss/variables";
+
+.size-selector {
+  padding-top: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  letter-spacing: -1px;
+  font-style: italic;
+
+  .multi-switch-container {
+    background-color: rgba($background-secondary, .7) !important;
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, .5);
+  }
+
+  .caption {
+    padding-top: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    font-size: 15px;
+    font-weight: 700;
+    color: $stat-info-text;
+  }
+}

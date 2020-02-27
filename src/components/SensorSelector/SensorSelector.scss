@@ -1,0 +1,204 @@
+@import "../../assets/scss/variables";
+
+.settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.sensor-selector {
+  display: flex;
+  flex-direction: column;
+  background: rgba(darken($background, 10%), .7);
+  height: 250px;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: calc(100% - 40px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 3px 3px 7px rgba(0, 0, 0, .5);
+
+  .heading {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    background: rgba(darken($background, 10%), .7);
+    border-bottom: 1px solid $background-secondary;
+    color: $main;
+    font-weight: 800;
+    letter-spacing: -1px;
+    font-size: 25px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    // Keyframes
+    @mixin keyframes($animation-name) {
+     @-webkit-keyframes #{$animation-name} {
+       @content;
+     }
+     @-moz-keyframes #{$animation-name} {
+       @content;
+     }
+     @keyframes #{$animation-name} {
+       @content;
+     }
+    }
+
+    // Progress Bar
+    .progress {
+     position: absolute;
+     left: 0px;
+     bottom: 0px;
+     height: 2px;
+     display: block;
+     width: 100%;
+     background-color: darken($primary, 40%);
+     border-radius: 2px;
+     background-clip: padding-box;
+     overflow: hidden;
+     opacity: 0;
+     transition: opacity 250ms linear;
+
+     &.show {
+       opacity: 1;
+     }
+
+     .determinate {
+       position: absolute;
+       background-color: inherit;
+       top: 0;
+       bottom: 0;
+       background-color: $primary;
+       transition: width .3s linear;
+     }
+     .indeterminate {
+       background-color: $primary;
+       &:before {
+         content: '';
+         position: absolute;
+         background-color: inherit;
+         top: 0;
+         left:0;
+         bottom: 0;
+         will-change: left, right;
+         // Custom bezier
+         animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+
+       }
+       &:after {
+         content: '';
+         position: absolute;
+         background-color: inherit;
+         top: 0;
+         left:0;
+         bottom: 0;
+         will-change: left, right;
+         // Custom bezier
+         animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+         animation-delay: 1.15s;
+       }
+     }
+    }
+    @include keyframes(indeterminate) {
+     0% {
+       left: -35%;
+       right:100%;
+     }
+     60% {
+       left: 100%;
+       right: -90%;
+     }
+     100% {
+       left: 100%;
+       right: -90%;
+     }
+    }
+
+    @include keyframes(indeterminate-short) {
+     0% {
+       left: -200%;
+       right: 100%;
+     }
+     60% {
+       left: 107%;
+       right: -8%;
+     }
+     100% {
+       left: 107%;
+       right: -8%;
+     }
+    }
+  }
+
+  .sensor-selector-list {
+    overflow-y: scroll;
+    height: 180px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .sensor-not-found {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: -.5px;
+      font-weight: 100;
+    }
+
+    .sensor {
+      padding-left: 20px;
+      padding-bottom: 10px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding-right: 10px;
+        color: $primary;
+
+        div {
+          .link {
+            transition: opacity 250ms linear;
+            opacity: 0;
+
+            &.connected {
+              opacity: 1;
+            }
+          }
+
+          .unlink {
+            color: $background-secondary;
+          }
+        }
+      }
+
+      .spacer {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        padding-right: 10px;
+      }
+
+      .name {
+        font-weight: 200;
+        flex-grow: 1;
+      }
+
+      .battery {
+        padding-right: 10px;
+      }
+    }
+  }
+}
