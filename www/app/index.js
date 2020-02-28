@@ -55584,14 +55584,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var animate_css_animate_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(animate_css_animate_css__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _Training__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../Training */ "./src/components/Training/index.js");
 /* harmony import */ var _Settings__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../Settings */ "./src/components/Settings/index.js");
-/* harmony import */ var _BluetoothCSC__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../BluetoothCSC */ "./src/components/BluetoothCSC/index.js");
-/* harmony import */ var _Stats__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Stats */ "./src/components/Stats/index.js");
-/* harmony import */ var _Speedometer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../Speedometer */ "./src/components/Speedometer/index.js");
-/* harmony import */ var _Tachometer__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../Tachometer */ "./src/components/Tachometer/index.js");
-/* harmony import */ var _Application_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Application.scss */ "./src/components/Application/Application.scss");
-/* harmony import */ var _Application_scss__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_Application_scss__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var _bg_png__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./bg.png */ "./src/components/Application/bg.png");
-/* harmony import */ var _bg_png__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_bg_png__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var _Stats__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../Stats */ "./src/components/Stats/index.js");
+/* harmony import */ var _Speedometer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Speedometer */ "./src/components/Speedometer/index.js");
+/* harmony import */ var _Tachometer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../Tachometer */ "./src/components/Tachometer/index.js");
+/* harmony import */ var _Application_scss__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Application.scss */ "./src/components/Application/Application.scss");
+/* harmony import */ var _Application_scss__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_Application_scss__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var _bg_png__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./bg.png */ "./src/components/Application/bg.png");
+/* harmony import */ var _bg_png__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_bg_png__WEBPACK_IMPORTED_MODULE_13__);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
@@ -55613,7 +55612,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -55663,22 +55661,30 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "onWheelSizeChanged", function (tab) {
+      var preferences = _this.state.preferences;
+      var wheelSize;
+
       switch (tab) {
         case 0:
-          return _this.setState({
-            wheelSize: 20
-          });
+          wheelSize = 20;
+          break;
 
         case 1:
-          return _this.setState({
-            wheelSize: 22
-          });
+          wheelSize = 22;
+          break;
 
         case 2:
-          return _this.setState({
-            wheelSize: 24
-          });
+          wheelSize = 24;
+          break;
       }
+
+      _this.setState({
+        wheelSize: wheelSize
+      }, function () {
+        preferences.put('wheelSize', wheelSize, function () {}, function (error) {
+          console.error('Unable to store wheelSize');
+        });
+      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "onCrankDeviceSelected", function (device) {
@@ -55947,6 +55953,13 @@ function (_React$Component) {
       } catch (error) {}
 
       window.addEventListener('orientationchange', this.onOrientationChange, false);
+      getPreference('wheelSize').then(function (wheelSize) {
+        if (wheelSize !== undefined) {
+          _this2.setState({
+            wheelSize: wheelSize
+          });
+        }
+      });
       Promise.all([getPreference('crankDevice'), getPreference('wheelDevice')]).then(function (results) {
         var crankDevice = results[0];
         var wheelDevice = results[1];
@@ -55955,22 +55968,36 @@ function (_React$Component) {
         }).map(function (d) {
           return d.id;
         });
-        ble.scan([CYCLING_SPEED_AND_CADENCE], 30, function (d) {
-          if (deviceIds.indexOf(d.id) > -1) {
-            var nextState = {};
 
-            if (crankDevice && crankDevice.id === d.id) {
-              nextState.crankDevice = d;
-            } else if (wheelDevice && wheelDevice.id === d.id) {
-              nextState.wheelDevice = d;
+        if (crankDevice) {
+          crankDevice.isConnected = false;
+        }
+
+        if (wheelDevice) {
+          wheelDevice.isConnected = false;
+        }
+
+        _this2.setState({
+          crankDevice: crankDevice,
+          wheelDevice: wheelDevice
+        }, function () {
+          ble.scan([CYCLING_SPEED_AND_CADENCE], 30, function (d) {
+            if (deviceIds.indexOf(d.id) > -1) {
+              var nextState = {};
+
+              if (crankDevice && crankDevice.id === d.id) {
+                nextState.crankDevice = d;
+              } else if (wheelDevice && wheelDevice.id === d.id) {
+                nextState.wheelDevice = d;
+              }
+
+              _this2.setState(nextState, function () {
+                connectDevice(d);
+              });
             }
-
-            _this2.setState(nextState, function () {
-              connectDevice(d);
-            });
-          }
-        }, function (error) {
-          console.error(error);
+          }, function (error) {
+            console.error(error);
+          });
         });
       }).catch(function (err) {
         return console.error(err);
@@ -55994,6 +56021,9 @@ function (_React$Component) {
     }
   }, {
     key: "render",
+    // <div className={`btn ripple ${activeTab === 1 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>
+    //   <div><FontAwesomeIcon icon={faList} /></div>
+    // </div>
     value: function render() {
       var setActiveTab = this.setActiveTab,
           onWheelSizeChanged = this.onWheelSizeChanged,
@@ -56008,7 +56038,7 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "bg-image"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
-        src: _bg_png__WEBPACK_IMPORTED_MODULE_14___default.a
+        src: _bg_png__WEBPACK_IMPORTED_MODULE_13___default.a
       })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(animate_css_react__WEBPACK_IMPORTED_MODULE_5___default.a, {
         enter: "bounceIn",
         leave: "bounceOut",
@@ -56030,7 +56060,7 @@ function (_React$Component) {
         onWheelSizeChanged: onWheelSizeChanged,
         onCrankDeviceSelected: onCrankDeviceSelected,
         onWheelDeviceSelected: onWheelDeviceSelected
-      }, this.state)), activeTab === 2 && react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Settings__WEBPACK_IMPORTED_MODULE_8__["default"], _extends({
+      }, this.state)), activeTab === 1 && react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Settings__WEBPACK_IMPORTED_MODULE_8__["default"], _extends({
         key: "settings",
         onWheelSizeChanged: onWheelSizeChanged,
         onCrankDeviceSelected: onCrankDeviceSelected,
@@ -56057,16 +56087,9 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__["FontAwesomeIcon"], {
         icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__["faBiking"]
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "btn ripple ".concat(activeTab === 1 ? 'active' : ''),
-        onClick: function onClick() {
-          return setActiveTab(1);
-        }
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__["FontAwesomeIcon"], {
-        icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__["faList"]
-      }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "btn ripple ".concat(activeTab === 2 ? 'active' : ''),
         onClick: function onClick() {
-          return setActiveTab(2);
+          return setActiveTab(1);
         }
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__["FontAwesomeIcon"], {
         icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__["faCogs"]
@@ -56204,135 +56227,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BatteryMeter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BatteryMeter */ "./src/components/BatteryMeter/BatteryMeter.jsx");
 
 /* harmony default export */ __webpack_exports__["default"] = (_BatteryMeter__WEBPACK_IMPORTED_MODULE_0__["default"]);
-
-/***/ }),
-
-/***/ "./src/components/BluetoothCSC/BluetoothCSC.jsx":
-/*!******************************************************!*\
-  !*** ./src/components/BluetoothCSC/BluetoothCSC.jsx ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-
-var CYCLING_SPEED_AND_CADENCE = '00001816-0000-1000-8000-00805f9b34fb';
-var CSC_SERVICE = '1816';
-var CSC_MEASUREMENT = '2a5b';
-var CSC_FEATURE = '2a5c';
-var UINT16_MAX = 65536;
-var UINT32_MAX = 4294967296;
-
-var BluetoothCSC =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(BluetoothCSC, _React$Component);
-
-  function BluetoothCSC(props) {
-    var _this;
-
-    _classCallCheck(this, BluetoothCSC);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(BluetoothCSC).call(this, props));
-    _this.state = {
-      crank: undefined,
-      wheel: undefined,
-      speed: 0,
-      cadence: 0
-    };
-    return _this;
-  }
-
-  _createClass(BluetoothCSC, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      if (!window.ble) {
-        return;
-      }
-
-      var _this$props = this.props,
-          wheelDevice = _this$props.wheelDevice,
-          crankDevice = _this$props.crankDevice,
-          wheelSize = _this$props.wheelSize;
-      var devices = wheelDevice === crankDevice ? [wheelDevice] : [wheelDevice, crankDevice];
-      devices.filter(function (d) {
-        return !!d;
-      }).forEach(function (device) {});
-    }
-  }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      if (!window.ble) {
-        return;
-      }
-
-      var _this$props2 = this.props,
-          wheelDevice = _this$props2.wheelDevice,
-          crankDevice = _this$props2.crankDevice;
-      var devices = [wheelDevice, crankDevice];
-      devices.filter(function (d) {
-        return !!d;
-      }).forEach(function (device) {
-        ble.stopNotification(device.id, CSC_SERVICE, CSC_MEASUREMENT);
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.Children.map(this.props.children, function (child) {
-        return react__WEBPACK_IMPORTED_MODULE_0___default.a.cloneElement(child, _objectSpread({}, _this2.state));
-      });
-    }
-  }]);
-
-  return BluetoothCSC;
-}(react__WEBPACK_IMPORTED_MODULE_0___default.a.Component);
-
-/* harmony default export */ __webpack_exports__["default"] = (BluetoothCSC);
-
-/***/ }),
-
-/***/ "./src/components/BluetoothCSC/index.js":
-/*!**********************************************!*\
-  !*** ./src/components/BluetoothCSC/index.js ***!
-  \**********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BluetoothCSC__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BluetoothCSC */ "./src/components/BluetoothCSC/BluetoothCSC.jsx");
-
-/* harmony default export */ __webpack_exports__["default"] = (_BluetoothCSC__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 /***/ }),
 
@@ -57176,12 +57070,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WheelSizeSelector__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../WheelSizeSelector */ "./src/components/WheelSizeSelector/index.js");
 /* harmony import */ var _CadenceSensorSelector__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../CadenceSensorSelector */ "./src/components/CadenceSensorSelector/index.js");
 /* harmony import */ var _SpeedSensorSelector__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../SpeedSensorSelector */ "./src/components/SpeedSensorSelector/index.js");
-/* harmony import */ var _BluetoothCSC__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../BluetoothCSC */ "./src/components/BluetoothCSC/index.js");
-/* harmony import */ var _Stats__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Stats */ "./src/components/Stats/index.js");
-/* harmony import */ var _Speedometer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../Speedometer */ "./src/components/Speedometer/index.js");
-/* harmony import */ var _Tachometer__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../Tachometer */ "./src/components/Tachometer/index.js");
-/* harmony import */ var _Settings_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Settings.scss */ "./src/components/Settings/Settings.scss");
-/* harmony import */ var _Settings_scss__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_Settings_scss__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _Stats__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../Stats */ "./src/components/Stats/index.js");
+/* harmony import */ var _Speedometer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Speedometer */ "./src/components/Speedometer/index.js");
+/* harmony import */ var _Tachometer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../Tachometer */ "./src/components/Tachometer/index.js");
+/* harmony import */ var _Settings_scss__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Settings.scss */ "./src/components/Settings/Settings.scss");
+/* harmony import */ var _Settings_scss__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_Settings_scss__WEBPACK_IMPORTED_MODULE_12__);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
@@ -57203,7 +57096,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -58349,13 +58241,15 @@ function (_React$Component) {
   _createClass(WheelSizeSelector, [{
     key: "render",
     value: function render() {
+      var wheelSize = this.props.wheelSize;
+      var selectedSwitch = wheelSize === 20 ? 0 : wheelSize === 22 ? 1 : 2;
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "size-selector"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "caption"
       }, "wheel size"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_multi_switch_toggle__WEBPACK_IMPORTED_MODULE_1___default.a, {
         texts: ['20"', '22"', '24"'],
-        selectedSwitch: 0,
+        selectedSwitch: selectedSwitch,
         borderWidth: '0',
         onToggleCallback: this.props.onWheelSizeChanged,
         fontColor: 'var(--main)',
@@ -58435,6 +58329,10 @@ __webpack_require__.r(__webpack_exports__);
 
 if (window.cordova) {
   document.addEventListener('deviceready', function () {
+    try {
+      window.screen.orientation.lock('portrait');
+    } catch (err) {}
+
     react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_src_components_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), document.getElementById('root'));
   }, false);
 } else {

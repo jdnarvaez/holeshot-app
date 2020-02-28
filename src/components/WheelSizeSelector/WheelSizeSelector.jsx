@@ -10,6 +10,9 @@ class WheelSizeSelector extends React.Component {
   }
 
   render() {
+    const { wheelSize } = this.props;
+    const selectedSwitch = wheelSize === 20 ? 0 : (wheelSize === 22 ? 1 : 2);
+
     return (
       <div className="size-selector">
         <div className="caption">wheel size</div>
@@ -19,7 +22,7 @@ class WheelSizeSelector extends React.Component {
               '22"',
               '24"',
             ]}
-            selectedSwitch={0}
+            selectedSwitch={selectedSwitch}
             borderWidth={'0'}
             onToggleCallback={this.props.onWheelSizeChanged}
             fontColor={'var(--main)'}

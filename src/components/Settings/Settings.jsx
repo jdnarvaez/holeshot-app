@@ -8,7 +8,6 @@ import { faLink } from '@fortawesome/free-solid-svg-icons';
 import WheelSizeSelector from '../WheelSizeSelector';
 import CadenceSensorSelector from '../CadenceSensorSelector';
 import SpeedSensorSelector from '../SpeedSensorSelector';
-import BluetoothCSC from '../BluetoothCSC';
 import Stats from '../Stats';
 import Speedometer from '../Speedometer';
 import Tachometer from '../Tachometer';

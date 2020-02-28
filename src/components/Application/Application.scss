@@ -99,18 +99,18 @@ html, body {
   bottom: 75px;
   left: 0px;
   height: 4px;
-  width: calc(33%);
+  width: calc(50%);
   background: $primary;
   transition: all 250ms linear;
   z-index: 100;
 }
 
 .indicator.one {
-  left: calc(33%);
+  left: calc(50%);
 }
 
 .indicator.two {
-  left: calc(66%);
+  left: calc(50%);
 }
 
 .navigation-panel {
@@ -142,7 +142,7 @@ html, body {
 
   .btn {
     border-right: 4px solid lighten($background, 10%);
-    width: calc(33%);
+    width: calc(50%);
   }
 
   .btn:last-child {
@@ -162,7 +162,7 @@ html, body {
 
   .btn {
     border-bottom: 4px solid lighten($background, 10%);
-    height: calc(33% - 4px);
+    height: calc(50%);
   }
 
   .btn:last-child {

@@ -9,7 +9,6 @@ import 'animate.css/animate.css'
 import Training from '../Training';
 import Settings from '../Settings';
 
-import BluetoothCSC from '../BluetoothCSC';
 import Stats from '../Stats';
 import Speedometer from '../Speedometer';
 import Tachometer from '../Tachometer';
@@ -56,14 +55,26 @@ class Application extends React.Component {
   }
 
   onWheelSizeChanged = (tab) => {
+    const { preferences } = this.state;
+    let wheelSize;
+
     switch (tab) {
       case 0:
-        return this.setState({ wheelSize : 20 });
+        wheelSize = 20;
+        break;
       case 1:
-        return this.setState({ wheelSize : 22 });
+        wheelSize = 22;
+        break;
       case 2:
-        return this.setState({ wheelSize : 24 });
+        wheelSize = 24;
+        break;
     }
+
+    this.setState({ wheelSize : wheelSize }, () => {
+      preferences.put('wheelSize', wheelSize, () => {}, (error) => {
+        console.error('Unable to store wheelSize');
+      });
+    });
   }
 
   onCrankDeviceSelected = (device) => {
@@ -143,28 +154,48 @@ class Application extends React.Component {
 
     window.addEventListener('orientationchange', this.onOrientationChange, false);
 
+    getPreference('wheelSize').then(wheelSize => {
+      if (wheelSize !== undefined) {
+        this.setState({ wheelSize : wheelSize });
+      }
+    });
+
     Promise.all([getPreference('crankDevice'), getPreference('wheelDevice')]).then(results => {
       const crankDevice = results[0];
       const wheelDevice = results[1];
       const deviceIds = [crankDevice, wheelDevice].filter(d => !!d).map(d => d.id);
 
-      ble.scan([CYCLING_SPEED_AND_CADENCE], 30, (d) => {
-        if (deviceIds.indexOf(d.id) > -1) {
-          const nextState = {};
+      if (crankDevice) {
+        crankDevice.isConnected = false;
+      }
 
-          if (crankDevice && crankDevice.id === d.id) {
-            nextState.crankDevice = d;
-          } else if (wheelDevice && wheelDevice.id === d.id) {
-            nextState.wheelDevice = d;
+      if (wheelDevice) {
+        wheelDevice.isConnected = false;
+      }
+
+      this.setState({
+        crankDevice : crankDevice,
+        wheelDevice : wheelDevice
+      }, () => {
+        ble.scan([CYCLING_SPEED_AND_CADENCE], 30, (d) => {
+          if (deviceIds.indexOf(d.id) > -1) {
+            const nextState = {};
+
+            if (crankDevice && crankDevice.id === d.id) {
+              nextState.crankDevice = d;
+            } else if (wheelDevice && wheelDevice.id === d.id) {
+              nextState.wheelDevice = d;
+            }
+
+            this.setState(nextState, () => {
+              connectDevice(d);
+            });
           }
+        }, (error) => {
+          console.error(error);
+        });
+      })
 
-          this.setState(nextState, () => {
-            connectDevice(d);
-          });
-        }
-      }, (error) => {
-        console.error(error);
-      });
     }).catch(err => console.error(err));
   }
 
@@ -294,6 +325,10 @@ class Application extends React.Component {
     }
   }
 
+  // <div className={`btn ripple ${activeTab === 1 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>
+  //   <div><FontAwesomeIcon icon={faList} /></div>
+  // </div>
+
   render() {
     const { setActiveTab, onWheelSizeChanged, onCrankDeviceSelected, onWheelDeviceSelected, connectDevice } = this;
     const { orientation, activeTab} = this.state;
@@ -323,7 +358,7 @@ class Application extends React.Component {
                 onWheelDeviceSelected={onWheelDeviceSelected}
                 {...this.state} />
             }
-            {activeTab === 2 &&
+            {activeTab === 1 &&
               <Settings
                 key="settings"
                 onWheelSizeChanged={onWheelSizeChanged}
@@ -348,10 +383,7 @@ class Application extends React.Component {
             <div className={`btn ripple ${activeTab === 0 ? 'active' : ''}`} onClick={() => setActiveTab(0)}>
               <div><FontAwesomeIcon icon={faBiking} /></div>
             </div>
-            <div className={`btn ripple ${activeTab === 1 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>
-              <div><FontAwesomeIcon icon={faList} /></div>
-            </div>
-            <div className={`btn ripple ${activeTab === 2 ? 'active' : ''}`} onClick={() => setActiveTab(2)}>
+            <div className={`btn ripple ${activeTab === 2 ? 'active' : ''}`} onClick={() => setActiveTab(1)}>
               <div><FontAwesomeIcon icon={faCogs} /></div>
             </div>
           </Animate>

@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React from 'react';
 import Animate from 'animate.css-react';
 import 'animate.css/animate.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
